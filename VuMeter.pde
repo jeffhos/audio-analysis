@@ -40,11 +40,13 @@ public class VuMeter implements Visualization
         maxValues[ i ] -= DELAY_RATE;
       }
       float factor = ( fftValue / maxValues[ i ] );
-//      int value = (int) ( fftValue / maxValues[ i ] * 255.0 );
-//      results[ i ] = color( value, value, value );
+      if (factor < lastValues[ i ] - DECAY_RATE) {
+        factor = lastValues[ i ] - DECAY_RATE;
+      }
       results[ i ]  = color( factor * red( currentColor ),
                              factor * green( currentColor ),
                              factor * blue( currentColor ) );
+      lastValues[ i ] = factor;
     }
     
     return results;
@@ -56,8 +58,10 @@ public class VuMeter implements Visualization
   }
   
   private static final float DELAY_RATE = 0.001;
+  private static final float DECAY_RATE = 0.1;
   
   private FFT fft;
   private float[] maxValues = new float[ NUM_LIGHTS ];
+  private float[] lastValues = new float[ NUM_LIGHTS ];
   private int cycle = 0;
 }
